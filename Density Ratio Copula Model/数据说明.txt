@@ -1,0 +1,7 @@
+drcpl：Density Ratio Clayton Copula的MSE
+empcpl：边际经验分布拟合的MSE
+norplug：矩估计的MSE
+pr_res_amend：费率计算结果（修正后的）
+sn_res_amend：Cramer-von Mises统计量计算结果（修正后的）
+main_empiri.R：主文件
+main_simu.R：数值模拟进行稳健性检验

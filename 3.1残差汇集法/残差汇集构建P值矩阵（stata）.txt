@@ -1,0 +1,51 @@
+/得到残差（demean and detrend）
+clear
+import excel "D:\学习\保研\论文\数据\山东各市大豆单产数据93-18.xlsx", sheet("Sheet1") firstrow
+tsset year
+gen yearid=year-1992
+foreach var of varlist  jinan-heze {
+reg `var' yearid,r
+predict `var'_res,residual  
+predict `var'_hat
+gen `var'_adj_res=`var'_res/`var'_hat
+}
+
+for var in jinan-heze { 
+keep `var'_adj_res
+}
+
+export excel year yearid  jinan_res-heze_res using "D:\学习\保研\论文\数据\yield_res.xlsx", firstrow(variables)
+export excel year yearid jinan_adj_res qingdao_adj_res zibo_adj_res zaozhuang_adj_res dongying_adj_res yantai_adj_res weifang_adj_res jining_adj_res taian_adj_res weihai_adj_res rizhao_adj_res laiwu_adj_res linyi_adj_res dezhou_adj_res liaocheng_adj_res binzhou_adj_res heze_adj_res using "D:\学习\保研\论文\数据\yield_adj_res.xlsx", firstrow(variables)
+
+//这里在Excel中将_res替换为none
+//用残差进行SUR分析
+clear 
+import excel "D:\学习\保研\论文\数据\yield_res.xlsx",sheet("Sheet1") firstrow
+foreach var of varlist  jinan-heze {
+gen `var'_2=`var'^2
+}
+foreach var of varlist  jinan-heze {
+gen `var'_3=`var'^3
+}
+foreach var of varlist  jinan_2-heze_3{
+reg `var'
+estimates store `var'
+}
+suest jinan_2 qingdao_2 zibo_2 zaozhuang_2 dongying_2 yantai_2 weifang_2 jining_2 taian_2 weihai_2 rizhao_2 laiwu_2 linyi_2 dezhou_2 liaocheng_2 binzhou_2 heze_2 jinan_3 qingdao_3 zibo_3 zaozhuang_3 dongying_3 yantai_3 weifang_3 jining_3 taian_3 weihai_3 rizhao_3 laiwu_3 linyi_3 dezhou_3 liaocheng_3 binzhou_3 heze_3
+foreach var of varlist qingdao-heze{
+test ([jinan_2_mean]_cons= [`var'_2_mean]_cons) ([jinan_3_mean]_cons= [`var'_3_mean]_cons)
+gen JN`var'_p=r(p)
+}
+foreach var of varlist zibo-heze{
+test ([qingdao_2_mean]_cons= [`var'_2_mean]_cons) ([qingdao_3_mean]_cons= [`var'_3_mean]_cons)
+gen QD`var'_p=r(p)
+}
+foreach var of varlist zaozhuang-heze{
+test ([zibo_2_mean]_cons= [`var'_2_mean]_cons) ([zibo_3_mean]_cons= [`var'_3_mean]_cons)
+gen ZB`var'_p=r(p)
+}
+foreach var of varlist dongying-heze{
+test ([zaozhuang_2_mean]_cons= [`var'_2_mean]_cons) ([zaozhuang_3_mean]_cons= [`var'_3_mean]_cons)
+gen ZZ`var'_p=r(p)
+}
+foreach var of varlist yantai-heze{

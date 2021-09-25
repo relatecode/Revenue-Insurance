@@ -1,0 +1,3 @@
+
+section1代码是yield distribution（产量分布）
+section2代码是revenue insurance premium（收入险费率计算）
